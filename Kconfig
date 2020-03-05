@@ -1,100 +1,108 @@
-#
-# Configuration for initramfs
-#
-
-config INITRAMFS_SOURCE
-	string "Initramfs source file(s)"
-	default ""
+menuconfig SAMPLES
+	bool "Sample kernel code"
 	help
-	  This can be either a single cpio archive with a .cpio suffix or a
-	  space-separated list of directories and files for building the
-	  initramfs image.  A cpio archive should contain a filesystem archive
-	  to be used as an initramfs image.  Directories should contain a
-	  filesystem layout to be included in the initramfs image.  Files
-	  should contain entries according to the format described by the
-	  "usr/gen_init_cpio" program in the kernel tree.
+	  You can build and test sample kernel code here.
 
-	  When multiple directories and files are specified then the
-	  initramfs image will be the aggregate of all of them.
+if SAMPLES
 
-	  See <file:Documentation/early-userspace/README> for more details.
-
-	  If you are not sure, leave it blank.
-
-config INITRAMFS_ROOT_UID
-	int "User ID to map to 0 (user root)"
-	depends on INITRAMFS_SOURCE!=""
-	default "0"
+config SAMPLE_TRACE_EVENTS
+	tristate "Build trace_events examples -- loadable modules only"
+	depends on EVENT_TRACING && m
 	help
-	  This setting is only meaningful if the INITRAMFS_SOURCE is
-	  contains a directory.  Setting this user ID (UID) to something
-	  other than "0" will cause all files owned by that UID to be
-	  owned by user root in the initial ramdisk image.
+	  This build trace event example modules.
 
-	  If you are not sure, leave it set to "0".
-
-config INITRAMFS_ROOT_GID
-	int "Group ID to map to 0 (group root)"
-	depends on INITRAMFS_SOURCE!=""
-	default "0"
+config SAMPLE_TRACE_PRINTK
+        tristate "Build trace_printk module - tests various trace_printk formats"
+	depends on EVENT_TRACING && m
 	help
-	  This setting is only meaningful if the INITRAMFS_SOURCE is
-	  contains a directory.  Setting this group ID (GID) to something
-	  other than "0" will cause all files owned by that GID to be
-	  owned by group root in the initial ramdisk image.
+	 This builds a module that calls trace_printk() and can be used to
+	 test various trace_printk() calls from a module.
 
-	  If you are not sure, leave it set to "0".
-
-config RD_GZIP
-	bool "Support initial ramdisks compressed using gzip"
-	depends on BLK_DEV_INITRD
-	default y
-	select DECOMPRESS_GZIP
+config SAMPLE_KOBJECT
+	tristate "Build kobject examples -- loadable modules only"
+	depends on m
 	help
-	  Support loading of a gzip encoded initial ramdisk or cpio buffer.
-	  If unsure, say Y.
+	  This config option will allow you to build a number of
+	  different kobject sample modules showing how to use kobjects,
+	  ksets, and ktypes properly.
 
-config RD_BZIP2
-	bool "Support initial ramdisks compressed using bzip2"
-	default y
-	depends on BLK_DEV_INITRD
-	select DECOMPRESS_BZIP2
-	help
-	  Support loading of a bzip2 encoded initial ramdisk or cpio buffer
-	  If unsure, say N.
+	  If in doubt, say "N" here.
 
-config RD_LZMA
-	bool "Support initial ramdisks compressed using LZMA"
-	default y
-	depends on BLK_DEV_INITRD
-	select DECOMPRESS_LZMA
+config SAMPLE_KPROBES
+	tristate "Build kprobes examples -- loadable modules only"
+	depends on KPROBES && m
 	help
-	  Support loading of a LZMA encoded initial ramdisk or cpio buffer
-	  If unsure, say N.
+	  This build several kprobes example modules.
 
-config RD_XZ
-	bool "Support initial ramdisks compressed using XZ"
-	depends on BLK_DEV_INITRD
-	default y
-	select DECOMPRESS_XZ
-	help
-	  Support loading of a XZ encoded initial ramdisk or cpio buffer.
-	  If unsure, say N.
+config SAMPLE_KRETPROBES
+	tristate "Build kretprobes example -- loadable modules only"
+	default m
+	depends on SAMPLE_KPROBES && KRETPROBES
 
-config RD_LZO
-	bool "Support initial ramdisks compressed using LZO"
-	default y
-	depends on BLK_DEV_INITRD
-	select DECOMPRESS_LZO
+config SAMPLE_HW_BREAKPOINT
+	tristate "Build kernel hardware breakpoint examples -- loadable module only"
+	depends on HAVE_HW_BREAKPOINT && m
 	help
-	  Support loading of a LZO encoded initial ramdisk or cpio buffer
-	  If unsure, say N.
+	  This builds kernel hardware breakpoint example modules.
 
-config RD_LZ4
-	bool "Support initial ramdisks compressed using LZ4"
-	default y
-	depends on BLK_DEV_INITRD
-	select DECOMPRESS_LZ4
+config SAMPLE_KFIFO
+	tristate "Build kfifo examples -- loadable modules only"
+	depends on m
 	help
-	  Support loading of a LZ4 encoded initial ramdisk or cpio buffer
-	  If unsure, say N.
+	  This config option will allow you to build a number of
+	  different kfifo sample modules showing how to use the
+	  generic kfifo API.
+
+	  If in doubt, say "N" here.
+
+config SAMPLE_KDB
+	tristate "Build kdb command example -- loadable modules only"
+	depends on KGDB_KDB && m
+	help
+	  Build an example of how to dynamically add the hello
+	  command to the kdb shell.
+
+config SAMPLE_RPMSG_CLIENT
+	tristate "Build rpmsg client sample -- loadable modules only"
+	depends on RPMSG && m
+	help
+	  Build an rpmsg client sample driver, which demonstrates how
+	  to communicate with an AMP-configured remote processor over
+	  the rpmsg bus.
+
+config SAMPLE_LIVEPATCH
+	tristate "Build live patching sample -- loadable modules only"
+	depends on LIVEPATCH && m
+	help
+	  Builds a sample live patch that replaces the procfs handler
+	  for /proc/cmdline to print "this has been live patched".
+
+config SAMPLE_CONFIGFS
+	tristate "Build configfs patching sample -- loadable modules only"
+	depends on CONFIGFS_FS && m
+	help
+	  Builds a sample configfs interface.
+
+config SAMPLE_CONNECTOR
+	tristate "Build connector sample -- loadable modules only"
+	depends on CONNECTOR && m
+	help
+	  When enabled, this builds both a sample kernel module for
+	  the connector interface and a user space tool to communicate
+	  with it.
+	  See also Documentation/connector/connector.txt
+
+config SAMPLE_SECCOMP
+	tristate "Build seccomp sample code -- loadable modules only"
+	depends on SECCOMP_FILTER && m
+	help
+	  Build samples of seccomp filters using various methods of
+	  BPF filter construction.
+
+config SAMPLE_BLACKFIN_GPTIMERS
+	tristate "Build blackfin gptimers sample code -- loadable modules only"
+	depends on BLACKFIN && BFIN_GPTIMERS && m
+	help
+	  Build samples of blackfin gptimers sample module.
+
+endif # SAMPLES
